@@ -1,0 +1,30 @@
+<?php
+$host = 'www.thyagoquintas.com.br:3306';
+$db = 'www.thyagoquintas.com.br';
+$user = 'engenharia_61';
+$pass = 'micoleaodourado';
+$charset = 'utf8mb4';
+$dsn  =  "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+PDO::ATTR_ERRMODE	=> PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_EMULATE_PREPARES => false,
+];
+try {
+$pdo = new PDO($dsn, $user, $pass, $options);
+$user = $_GET['user'] ?? '';
+$password = $_GET['password'] ?? '';
+
+// Query para verificar as credenciais
+$sql = "SELECT USER_ID as userId, USERNAME as username, USER_EMAIL as userEmail FROM USUARIO
+WHERE USER = :user AND PASSWORD = :password";
+
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['user' => $user, 'password' => $password]);
+$users = $stmt->fetchAll();
+ 
+header('Content-Type: application/json'); echo json_encode($users);
+
+} catch (\PDOException $e) {
+echo "Erro de conexão: " . $e->getMessage(); exit;
+}
+?>
